@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/fragments/head :: head"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper text-white">
+
+    <div th:replace="admin/fragments/header :: header"></div>
+    <!-- =============================================== -->
+
+    <!-- Left side column. contains the sidebar -->
+    <div th:replace="admin/fragments/sidebar :: sidebar"></div>
+
+    <!-- =============================================== -->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+    <!--        <section class="content-header">-->
+    <!--            <h1>-->
+    <!--                Trang Chủ-->
+    <!--            </h1>-->
+    <!--        </section>-->
+
+        <!-- Main content -->
+        <section class="content bg-black">
+            <!-- Default box -->
+            <div class="box bg-black">
+                <div class="box-body">
+                    <h1 class="welcome-title text-center">Chào mừng tới trang quản trị</h1>
+                    <div>
+                        <img src="/img/banner.jpg" height="580px" width="100%"/></div>
+                </div>
+            </div>
+            <!-- /.box -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <div th:replace="admin/fragments/footer :: footer"></div>
+
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="admin/fragments/script :: script"></div>
+<script src="/js/main.js"></script>
+<script src="/js/DangNhap/login.js"></script>
+<script src="/js/DangNhap/logout.js"></script>
+<style>
+    /* Trong file CSS của bạn */
+    .welcome-title {
+        font-family: 'Georgia', serif;
+        font-size: 2.0em;
+        color: #FFFFFF;
+        text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+        letter-spacing: 3px;
+        font-weight: 300;
+        animation: fadeInScale 3s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95); /* Bắt đầu hơi nhỏ hơn */
+        }
+        to {
+            opacity: 1;
+            transform: scale(1); /* Phóng to về kích thước ban đầu */
+        }
+    }
+</style>
+</body>
+</html>

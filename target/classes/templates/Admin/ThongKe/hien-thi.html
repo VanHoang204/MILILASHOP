@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<!-- Thêm một chút CSS để cải thiện giao diện -->
+<head th:replace="admin/fragments/head :: head"></head>
+<style>
+    /* Thiết kế tổng thể cho card */
+    .card1 {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Thêm hiệu ứng hover cho card */
+    .card1:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Cải thiện card-body */
+    .card1-body {
+        padding: 20px;
+        background-color: #000000;
+        border-radius: 10px;
+        color: #333;
+    }
+
+    /* Thiết kế tiêu đề */
+    h2 {
+        font-family: 'Roboto', sans-serif;
+        font-size: 28px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    /* Khoảng cách giữa các card */
+    .mb-3 {
+        margin-bottom: 20px;
+    }
+
+    /* Làm đậm các nhãn và cải thiện không gian */
+    .font-weight-bold {
+        font-weight: 700;
+        font-size: 16px;
+        color: #16a085;
+    }
+
+    /* Các phần tử tăng trưởng với màu sắc */
+    .growth {
+        font-size: 16px;
+        color: #e74c3c; /* Màu đỏ để tạo điểm nhấn */
+    }
+
+    /* Cải thiện khoảng cách giữa các phần tử */
+    .ml-2 {
+        margin-left: 10px;
+    }
+
+    /* Cải thiện giao diện của các số liệu */
+    #doanhThuNgayNay,
+    #doanhThuThangNay,
+    #doanhThuNamNay,
+    #soLuongSanPhamThangNay,
+    #soLuongHoaDonNgayNay,
+    #soLuongHoaDonThangNay {
+        font-size: 18px;
+        font-weight: bold;
+        color: #9FEE00; /* Màu xanh lá cây cho các giá trị */
+    }
+
+    /* Cải thiện vị trí và căn giữa */
+    .text-center {
+        text-align: center;
+    }
+</style>
+<!-- Thêm một số hiệu ứng CSS cho đẹp hơn -->
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+    <div th:replace="admin/fragments/header :: header"></div>
+    <!-- =============================================== -->
+
+    <!-- Left side column. contains the sidebar -->
+    <div th:replace="admin/fragments/sidebar :: sidebar"></div>
+
+    <!-- =============================================== -->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Thống Kê
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="box">
+                <div class="box-body">
+                    <div class="container mt-4">
+                        <div class="row">
+                            <!-- Cột bên trái chứa các thẻ thông tin (cards) -->
+                            <div class="col-md-4">
+                                <div class="card text-white bg-primary mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Doanh số tháng này</h5>
+                                        <p class="display-4" th:text="${soLuongHoaDonThangNay}"></p>
+                                        <!-- Hiển thị số lượng hóa đơn -->
+                                        <p class="h4" th:if="${doanhSoThangNay == 0}">0 VND</p>
+                                        <p class="h4" th:if="${doanhSoThangNay != 0}"
+                                           th:text="${#numbers.formatInteger(doanhSoThangNay, 3, 'COMMA') + ' VND'}"></p>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card text-white bg-warning mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Doanh số hôm nay</h5>
+                                        <p class="display-4" th:text="${soLuongHoaDonNgayNay}"></p>
+                                        <!-- Hiển thị số lượng hóa đơn -->
+                                        <p class="h4" th:if="${doanhSoNgayNay == 0}">0 VND</p>
+                                        <p class="h4" th:if="${doanhSoNgayNay != 0}"
+                                           th:text="${#numbers.formatInteger(doanhSoNgayNay, 3, 'COMMA') + ' VND'}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card text-white bg-success mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Sản phẩm bán được trong tháng</h5>
+                                        <p class="display-4" th:text="${soLuongSanPhamThangNay}"></p>
+                                        <!-- Tổng sản phẩm -->
+                                        <p class="h4">Sản phẩm</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="container mt-5">
+                            <h2 class="text-center mb-4">Biểu đồ Thống Kê Bán Hàng</h2>
+
+                            <!-- Bộ lọc -->
+                            <div class="row justify-content-center mb-4">
+                                <div class="col-md-10 d-flex justify-content-around">
+                                    <button type="button" class="btn btn-outline-primary" id="dayFilter">Ngày</button>
+                                    <button type="button" class="btn btn-outline-primary" id="sevenDaysFilter">7 Ngày
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" id="monthFilter">Tháng
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" id="yearFilter">Năm</button>
+                                    <button type="button" class="btn btn-outline-primary" id="customFilter">Tùy chỉnh
+                                    </button>
+                                </div>
+                                <!-- Tùy chỉnh ngày (hiển thị khi chọn Tùy chỉnh) -->
+                                <div class="row justify-content-center text-center" id="customDateRange"
+                                     style="display: none;">
+                                    <div class="col-md-10 d-flex justify-content-around">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="date" id="startDate"
+                                                       class="form-control form-control-lg rounded-pill border-0 shadow-sm"
+                                                       placeholder="Ngày bắt đầu">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="date" id="endDate"
+                                                       class="form-control form-control-lg rounded-pill border-0 shadow-sm"
+                                                       placeholder="Ngày kết thúc">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Biểu đồ -->
+                            <div class="row justify-content-center mt-5">
+                                <div class="col-md-10">
+                                    <div class="card shadow-lg border-0 rounded-4">
+                                        <div class="card-header text-center bg-gradient-primary text-black rounded-4">
+                                            <h4 class="m-1">Biểu Đồ Thống Kê Bán Hàng</h4>
+                                        </div>
+                                        <div class="card-body py-4 px-5">
+                                            <canvas id="myChart" height="500"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top sản phẩm Trong tháng -->
+                        <div class="container mt-5">
+                            <!-- Dòng đầu tiên: Top Sản Phẩm Bán Chạy và Trạng Thái Đơn Hàng -->
+                            <div class="row mt-5">
+                                <!-- Cột bên trái: Top Sản Phẩm Bán Chạy -->
+                                <div class="col-md-6 border-dark shadow-lg border-0 rounded-4">
+                                    <h2 class="text-center">Top Sản Phẩm Bán Chạy Trong Tháng</h2>
+                                    <div id="productsList" class="list-group">
+                                        <div class="shadow-lg border-0 rounded-4">
+                                            <table id="productTable" class="table table-striped table-bordered">
+                                                <thead class="table-dark">
+                                                <tr>
+                                                    <th scope="col" class="text-center">STT</th>
+                                                    <th scope="col" class="text-center">Hình Ảnh</th>
+                                                    <th scope="col" class="text-center">Tên Sản Phẩm</th>
+                                                    <th scope="col" class="text-center">Giá</th>
+                                                    <th scope="col" class="text-center">Tổng Số Lượng Bán</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="text-center">
+                                                <tr th:each="product, iterStat : ${productsPage}">
+                                                    <td th:text="${iterStat.index + 1}"></td> <!-- STT -->
+                                                    <td>
+                                                        <img th:src="${product[0]}" alt="Hình Ảnh" width="80">
+                                                    </td> <!-- Hình ảnh -->
+                                                    <td th:text="${product[1]}"></td> <!-- Tên sản phẩm -->
+                                                    <td th:text="${#numbers.formatInteger(product[2], 3, 'COMMA') + ' VND'}"></td> <!-- Giá sản phẩm -->
+                                                    <td style="color: red; font-weight: bold; font-size: 1.2em;" th:text="${product[4]}"></td> <!-- Tổng số lượng bán -->
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cột bên phải: Trạng Thái Đơn Hàng -->
+                                <div class="col-md-6 border-dark shadow-lg border-0 rounded-4">
+                                    <h2 class="text-center">Trạng Thái Đơn Hàng Tháng Này</h2>
+                                    <canvas id="orderStatusChart" class="card shadow-lg border-0 rounded-4"
+                                            style="width: 60%; height: 200px;"></canvas>
+                                </div>
+
+                            </div>
+
+                            <!-- Dòng thứ hai: Sản Phẩm Sắp Hết Hàng và Tốc Độ Tăng Trưởng -->
+                            <div class="row mt-5">
+                                <!-- Cột bên trái: Sản Phẩm Sắp Hết Hàng -->
+                                <div class="col-md border-dark shadow-lg border-0 rounded-4">
+                                    <h2 class="text-center">Sản Phẩm Sắp Hết Hàng</h2>
+                                    <div id="lowStockList" class="list-group">
+                                        <div class="shadow-lg border-0 rounded-4">
+                                            <table id="productTable1" class="table table-striped table-bordered">
+                                                <thead class="table-dark">
+                                                <tr >
+                                                    <th scope="col" class="text-center">STT</th>
+                                                    <th scope="col" class="text-center">Hình Ảnh</th>
+                                                    <th scope="col" class="text-center">Tên Sản Phẩm</th>
+                                                    <th scope="col" class="text-center">Giá</th>
+                                                    <th scope="col" class="text-center">Còn Lại</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="text-center">
+                                                <tr th:each="lowStockProduct, iterStat : ${lowStockProducts}">
+                                                    <td th:text="${iterStat.index + 1}"></td>
+                                                    <td>
+                                                        <img th:if="${not #lists.isEmpty(lowStockProduct.hinhAnh)}"
+                                                             th:src="${lowStockProduct.hinhAnh[0].urlHinhAnh}"
+                                                             alt="Hình Ảnh" width="80">
+                                                    </td>
+                                                    <td>
+                                                        <span th:text="${lowStockProduct.sanPham?.tenSanPham}"></span> -
+                                                        <span th:text="${lowStockProduct.mauSac?.tenMauSac}"></span> -
+                                                        <span th:text="${lowStockProduct.kichThuoc?.tenKichThuoc}"></span>
+                                                        <br> <!-- Xuống dòng -->
+                                                        <div class="progress">
+                                                            <div th:classappend="${lowStockProduct.trangThai == 'Còn Hàng' ? 'bg-success' : 'bg-danger'}"
+                                                                 th:text="${lowStockProduct.trangThai}"
+                                                                 class="progress-bar text-white text-center d-flex align-items-center justify-content-center"
+                                                                 style="width: 100%">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td th:text="${lowStockProduct.gia != null ? #numbers.formatInteger(lowStockProduct.gia, 3, 'COMMA') + ' VND' : 'N/A'}"></td>
+                                                    <td style="color: red; font-weight: bold; font-size: 1.2em;"
+                                                        th:text="${lowStockProduct.soLuong != null ? lowStockProduct.soLuong : '0'}"></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cột bên phải: Tốc Độ Tăng Trưởng Cửa Hàng -->
+                                <div class="col-md-6 border-dark shadow-lg border-0 rounded-4">
+                                    <h2 class="text-center mb-4">Tốc Độ Tăng Trưởng Cửa Hàng</h2>
+                                    <div class="shadow-lg border-0 rounded-4">
+                                        <!-- Doanh thu ngày -->
+                                        <div class="card mb-3 bg-dark text-white">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <span class="font-weight-bold">📅 Doanh thu ngày</span>
+                                                <span id="doanhThuNgayNay" class="growth text-center flex-grow-1">1.000.000 ₫</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Doanh thu tháng -->
+                                        <div class="card mb-3 bg-dark text-white">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <span class="font-weight-bold">📅 Doanh thu tháng</span>
+                                                <span id="doanhThuThangNay" class="growth text-center flex-grow-1">...</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Doanh thu năm -->
+                                        <div class="card mb-3 bg-dark text-white">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <span class="font-weight-bold">📅 Doanh thu năm</span>
+                                                <span id="doanhThuNamNay" class="growth text-center flex-grow-1">...</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sản phẩm tháng -->
+                                        <div class="card mb-3 bg-dark text-white">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <span class="font-weight-bold">📦 Sản phẩm tháng</span>
+                                                <span id="soLuongSanPhamThangNay" class="growth text-center flex-grow-1">...</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Hóa đơn ngày -->
+                                        <div class="card mb-3 bg-dark text-white">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <span class="font-weight-bold">🧾 Hóa đơn ngày</span>
+                                                <span id="soLuongHoaDonNgayNay" class="growth text-center flex-grow-1">...</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Hóa đơn tháng -->
+                                        <div class="card mb-3 bg-dark text-white">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <span class="font-weight-bold">🧾 Hóa đơn tháng</span>
+                                                <span id="soLuongHoaDonThangNay" class="growth text-center flex-grow-1">...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <div th:replace="admin/fragments/footer :: footer"></div>
+
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<!-- Thêm các tài nguyên JavaScript (jQuery, v.v.) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div th:replace="admin/fragments/script :: script"></div>
+
+<!-- Thêm Chart.js JS để tạo biểu đồ -->
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        // Lấy giá trị từ các thuộc tính data-value
+        const doanhThuNgayNay = /*[[${doanhThuNgayNay}]]*/ 0;
+        const doanhThuThangNay = /*[[${doanhThuThangNay}]]*/ 0;
+        const doanhThuNamNay = /*[[${doanhThuNamNay}]]*/ 0;
+        const soLuongSanPhamThangNay = /*[[${soLuongSanPhamThangNay}]]*/ 0;
+        const soLuongHoaDonNgayNay = /*[[${soLuongHoaDonNgayNay}]]*/ 0;
+        const soLuongHoaDonThangNay = /*[[${soLuongHoaDonThangNay}]]*/ 0;
+
+        // Hiển thị doanh thu
+        document.getElementById("doanhThuNgayNay").textContent = formatCurrency(doanhThuNgayNay);
+        document.getElementById("doanhThuThangNay").textContent = formatCurrency(doanhThuThangNay);
+        document.getElementById("doanhThuNamNay").textContent = formatCurrency(doanhThuNamNay);
+        document.getElementById("soLuongSanPhamThangNay").textContent = soLuongSanPhamThangNay + " Sản phẩm";
+        document.getElementById("soLuongHoaDonNgayNay").textContent = soLuongHoaDonNgayNay + " Hóa đơn";
+        document.getElementById("soLuongHoaDonThangNay").textContent = soLuongHoaDonThangNay + " Hóa đơn";
+
+    });
+
+
+    // Hàm định dạng số tiền
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
+</script>
+
+<script th:inline="javascript">
+    var labels = /*[[${dates}]]*/ [];
+    var salesData = /*[[${salesData}]]*/ [];
+    var invoiceData = /*[[${invoiceData}]]*/ [];
+    var revenueData = /*[[${revenueData}]]*/ [];
+
+    // Debug dữ liệu gốc
+    console.log("Dữ liệu gốc - Labels:", labels);
+    console.log("Sales Data:", salesData);
+    console.log("Invoice Data:", invoiceData);
+    console.log("Revenue Data:", revenueData);
+
+    var originalLabels = labels.slice();
+    var originalSalesData = salesData.slice();
+    var originalInvoiceData = invoiceData.slice();
+    var originalRevenueData = revenueData.slice();
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Số lượng sản phẩm bán ra',
+                data: salesData,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var index = context.dataIndex;
+                            var product = salesData[index];
+                            var invoice = invoiceData[index];
+                            var revenue = revenueData[index].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+                            return [
+                                'Sản phẩm bán: ' + product,
+                                'Số hóa đơn: ' + invoice,
+                                'Doanh thu: ' + revenue
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Hàm chuẩn hóa ngày (chỉ lấy ngày tháng năm)
+    function normalizeDate(date) {
+        // Làm tròn xuống giờ phút giây để chỉ lấy ngày
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    // Sự kiện lọc
+    document.getElementById('dayFilter').addEventListener('click', function () {
+        console.log("Bộ lọc: Hôm nay");
+        updateChartData('1');
+    });
+
+    document.getElementById('sevenDaysFilter').addEventListener('click', function () {
+        console.log("Bộ lọc: 7 ngày gần nhất");
+        updateChartData('7');
+    });
+
+    document.getElementById('monthFilter').addEventListener('click', function () {
+        console.log("Bộ lọc: 1 tháng");
+        updateChartData('30');
+    });
+
+    document.getElementById('yearFilter').addEventListener('click', function () {
+        console.log("Bộ lọc: 1 năm");
+        updateChartData('365');
+    });
+
+    document.getElementById('customFilter').addEventListener('click', function () {
+        console.log("Bộ lọc: Tùy chỉnh");
+        document.getElementById('customDateRange').style.display = 'block';
+        updateChartData(); // reset nếu chưa chọn ngày
+    });
+
+    document.getElementById('startDate').addEventListener('change', applyCustomDateFilter);
+    document.getElementById('endDate').addEventListener('change', applyCustomDateFilter);
+
+    function applyCustomDateFilter() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+        console.log("Ngày tùy chỉnh:", startDate, "->", endDate);
+        if (startDate && endDate) {
+            updateChartData(null, startDate, endDate);
+        }
+    }
+
+    function updateChartData(filterValue, startDate = null, endDate = null) {
+        console.log("Đang cập nhật biểu đồ...");
+        var filteredLabels = [];
+        var filteredSalesData = [];
+        var filteredInvoiceData = [];
+        var filteredRevenueData = [];
+
+        // Lấy thời điểm hiện tại với thời gian
+        var currentDate = new Date();
+        var currentTimestamp = currentDate.getTime(); // Thời gian tính theo ms từ epoch
+        var filterDate;
+
+        if (filterValue) {
+            switch (filterValue) {
+                case '1':  // Hôm nay
+                    filterDate = currentDate;
+                    break;
+                case '7':  // 7 ngày gần nhất
+                    filterDate = new Date(currentTimestamp - 7 * 24 * 60 * 60 * 1000); // Lấy thời điểm 7 ngày trước
+                    break;
+                case '30':  // 1 tháng
+                    filterDate = new Date(currentTimestamp - 30 * 24 * 60 * 60 * 1000); // Lấy thời điểm 1 tháng trước
+                    break;
+                case '365':  // 1 năm
+                    filterDate = new Date(currentTimestamp - 365 * 24 * 60 * 60 * 1000); // Lấy thời điểm 1 năm trước
+                    break;
+            }
+
+            console.log("Ngày lọc từ:", filterDate);
+
+            // Lọc dữ liệu theo ngày
+            for (var i = 0; i < originalLabels.length; i++) {
+                var dateParts = originalLabels[i].split(' - ');
+                if (dateParts.length === 3) {
+                    var labelDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                    labelDate.setHours(0, 0, 0, 0); // Làm tròn thời gian cho chính xác
+
+                    // So sánh ngày
+                    if (labelDate.getTime() >= filterDate.getTime()) {
+                        filteredLabels.push(originalLabels[i]);
+                        filteredSalesData.push(originalSalesData[i]);
+                        filteredInvoiceData.push(originalInvoiceData[i]);
+                        filteredRevenueData.push(originalRevenueData[i]);
+                    }
+                } else {
+                    console.warn("Lỗi định dạng ngày:", originalLabels[i]);
+                }
+            }
+        } else if (startDate && endDate) {  // Lọc theo ngày tùy chỉnh
+            var start = new Date(startDate);
+            var end = new Date(endDate);
+            start.setHours(0, 0, 0, 0); // Làm tròn xuống đầu ngày
+            end.setHours(23, 59, 59, 999); // Làm tròn lên cuối ngày
+
+            console.log("Lọc từ ngày:", start, "đến ngày:", end);
+
+            for (var i = 0; i < originalLabels.length; i++) {
+                var dateParts = originalLabels[i].split(' - ');
+                if (dateParts.length === 3) {
+                    var labelDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                    labelDate.setHours(0, 0, 0, 0); // Làm tròn thời gian cho chính xác
+
+                    if (labelDate.getTime() >= start.getTime() && labelDate.getTime() <= end.getTime()) {
+                        filteredLabels.push(originalLabels[i]);
+                        filteredSalesData.push(originalSalesData[i]);
+                        filteredInvoiceData.push(originalInvoiceData[i]);
+                        filteredRevenueData.push(originalRevenueData[i]);
+                    }
+                } else {
+                    console.warn("Lỗi định dạng ngày:", originalLabels[i]);
+                }
+            }
+        } else {
+            // Không có filter, reset về toàn bộ
+            filteredLabels = originalLabels.slice();
+            filteredSalesData = originalSalesData.slice();
+            filteredInvoiceData = originalInvoiceData.slice();
+            filteredRevenueData = originalRevenueData.slice();
+            console.log("Reset biểu đồ về dữ liệu gốc");
+        }
+
+        console.log("Dữ liệu sau lọc:");
+        console.log("Labels:", filteredLabels);
+        console.log("Sales:", filteredSalesData);
+        console.log("Invoices:", filteredInvoiceData);
+        console.log("Revenue:", filteredRevenueData);
+
+        // Cập nhật dữ liệu cho biểu đồ
+        myChart.data.labels = filteredLabels;
+        myChart.data.datasets[0].data = filteredSalesData;
+        myChart.update();
+    }
+</script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var processingPercentage = [[${processingPercentage}]];
+    var waitingConfirmationPercentage = [[${waitingConfirmationPercentage}]];
+    var confirmedPercentage = [[${confirmedPercentage}]];
+    var waitingDeliveryPercentage = [[${waitingDeliveryPercentage}]];
+    var paidPercentage = [[${paidPercentage}]];
+    var finishedPercentage = [[${finishedPercentage}]];
+    var cancelledPercentage = [[${cancelledPercentage}]];
+    var failedPercentage = [[${failedPercentage}]];
+
+    var ctx = document.getElementById('orderStatusChart').getContext('2d');
+
+    var orderStatusChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Đang Xử Lý', 'Chờ Xác Nhận', 'Đã Xác Nhận', 'Chờ Vận Chuyển',
+                'Đã Thanh Toán', 'Đã Hoàn Thành', 'Đã Hủy', 'Hoàn Trả'],
+            datasets: [{
+                label: 'Trạng Thái Đơn Hàng',
+                data: [
+                    processingPercentage,
+                    waitingConfirmationPercentage,
+                    confirmedPercentage,
+                    waitingDeliveryPercentage,
+                    paidPercentage,
+                    finishedPercentage,
+                    cancelledPercentage,
+                    failedPercentage
+                ],
+                backgroundColor: ['#28a745', '#ffc107', '#17a2b8', '#ffc0cb', '#007bff', '#8e44ad', '#f39c12', '#d35400'],
+                borderColor: ['#218838', '#e0a800', '#138496', '#e0a0a0', '#0056b3', '#6c3483', '#d68910', '#b03a2e'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    /*]]>*/
+</script>
+
+<!--Load table-->
+<script>
+    $(document).ready(function () {
+        function initializeDataTable(tableId) {
+            $(tableId).DataTable({
+                "paging": true,
+                "lengthMenu": [3, 5, 7, 9, 10, 20],
+                "pageLength": 3,
+                "autoWidth": false,
+                "responsive": true,
+                "language": {
+                    "sProcessing": "Đang xử lý...",
+                    "sLengthMenu": "Hiển thị _MENU_ dòng",
+                    "sZeroRecords": "Không tìm thấy dữ liệu",
+                    "sInfo": "Hiển thị _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                    "sInfoEmpty": "Không có dữ liệu để hiển thị",
+                    "sInfoFiltered": "(lọc từ _MAX_ dòng)",
+                    "sSearch": "Tìm kiếm:",
+                    "oPaginate": {
+                        "sFirst": "Đầu",
+                        "sPrevious": "Trước",
+                        "sNext": "Tiếp",
+                        "sLast": "Cuối"
+                    }
+                }
+            });
+        }
+
+        // Khởi tạo DataTable cho cả hai bảng
+        initializeDataTable('#productTable');
+        initializeDataTable('#productTable1');
+    });
+
+</script>
+
+<script src="/js/main.js"></script>
+<script src="/js/DangNhap/login.js"></script>
+<script src="/js/DangNhap/logout.js"></script>
+</body>
+</html>

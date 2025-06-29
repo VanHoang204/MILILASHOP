@@ -301,47 +301,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Modal Xác Nhận Thanh Toán -->
-                                <div id="xacNhanThanhToanModal" class="modal fade" tabindex="-1" role="dialog">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Chọn Phương Thức Thanh Toán</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <label>Chọn phương thức thanh toán:</label>
-                                                <div id="listPhuongThucThanhToan"
-                                                     class="d-flex flex-wrap gap-2 justify-content-between"
-                                                     th:if="${hoaDon.tongTien - hoaDon.soTienDaThanhToan > 0}">
-                                                    <input type="hidden" id="paymentMethod"/>
-                                                    <button type="button" class="btn btn-outline-primary"
-                                                            th:each="phuongThuc : ${listPhuongThucThanhToan}"
-                                                            th:text="${phuongThuc.tenPhuongThuc}"
-                                                            th:attr="data-value=${phuongThuc.id}"
-                                                            onclick="chonPhuongThuc(this)">
-                                                    </button>
-                                                </div>
 
-                                                <div th:if="${hoaDon.tongTien - hoaDon.soTienDaThanhToan == 0}">
-                                                    <p>Hóa đơn đã được thanh toán đầy đủ.</p>
-                                                </div>
-                                                <p><strong>Còn lại:</strong> <span id="conLai"
-                                                                                   th:text="${hoaDon.tongTien - hoaDon.soTienDaThanhToan}"></span>
-                                                    VND</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                    Hủy
-                                                </button>
-                                                <button type="button" class="btn btn-primary"
-                                                        onclick="xacNhanThanhToan()">Xác Nhận
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <div class="d-flex justify-content-end mb-3">
                                     <!-- Nút mở modal -->
@@ -455,7 +415,47 @@
                                 </div>
                             </div>
                         </section>
+                        <!-- Modal Xác Nhận Thanh Toán -->
+                        <div id="xacNhanThanhToanModal" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Chọn Phương Thức Thanh Toán</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <label>Chọn phương thức thanh toán:</label>
+                                        <div id="listPhuongThucThanhToan"
+                                             class="d-flex flex-wrap gap-2 justify-content-between"
+                                             th:if="${hoaDon.tongTien - hoaDon.soTienDaThanhToan > 0}">
+                                            <input type="hidden" id="paymentMethod"/>
+                                            <button type="button" class="btn btn-outline-primary"
+                                                    th:each="phuongThuc : ${listPhuongThucThanhToan}"
+                                                    th:text="${phuongThuc.tenPhuongThuc}"
+                                                    th:attr="data-value=${phuongThuc.id}"
+                                                    onclick="chonPhuongThuc(this)">
+                                            </button>
+                                        </div>
 
+                                        <div th:if="${hoaDon.tongTien - hoaDon.soTienDaThanhToan == 0}">
+                                            <p>Hóa đơn đã được thanh toán đầy đủ.</p>
+                                        </div>
+                                        <p><strong>Còn lại:</strong> <span id="conLai"
+                                                                           th:text="${hoaDon.tongTien - hoaDon.soTienDaThanhToan}"></span>
+                                            VND</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Hủy
+                                        </button>
+                                        <button type="button" class="btn btn-primary"
+                                                onclick="xacNhanThanhToan()">Xác Nhận
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <section class="mt-4 p-4 border rounded bg-light shadow-sm">
                             <div class="row align-items-center mb-3">
                                 <div class="col-md-6">
